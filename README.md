@@ -3,7 +3,9 @@ An alternate **AND UNOFFICIAL** library and utility app for PICO XR (and Quest).
 
 添加了2D应用分类
 
-修改图标缓存格式和路径为 Android/data/<packagename>/cache/banners.<packagename>.png
+修改图标缓存格式和路径为:
+
+Android/data/<packagename>/cache/banners.<packagename>.png
 
 联网库没有的图标可以自制png格式图片的图片生成图标默认尺寸（512x288）
 
