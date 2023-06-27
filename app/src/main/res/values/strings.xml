@@ -89,6 +89,7 @@
     <string-array name="group_options">
         <item>☰\t All</item>
         <item>★\t Favorites</item>
+        <item>②\t 2D Apps</item>
         <item>—\t Hidden</item>
     </string-array>
 
