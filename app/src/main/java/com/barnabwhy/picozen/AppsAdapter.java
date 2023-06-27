@@ -15,6 +15,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.graphics.drawable.GradientDrawable;
 import android.os.Build;
+import android.os.Environment;
 import android.os.Handler;
 import android.util.DisplayMetrics;
 import android.util.Log;
@@ -57,8 +58,8 @@ public class AppsAdapter extends BaseAdapter
     private final MainActivity mainActivityContext;
     private List<ApplicationInfo> appList;
     private final Set<String> favoriteList;
+    private final Set<String> TwoDList;
     private final Set<String> hiddenList;
-
     public enum SORT_FIELD { APP_NAME, RECENT_DATE, INSTALL_DATE }
     public enum SORT_ORDER { ASCENDING, DESCENDING }
 
@@ -89,6 +90,7 @@ public class AppsAdapter extends BaseAdapter
         settingsProvider = SettingsProvider.getInstance(mainActivityContext);
 
         favoriteList = sharedPreferences.getStringSet(SettingsProvider.KEY_FAVORITE_APPS, new HashSet<>());
+        TwoDList = sharedPreferences.getStringSet(SettingsProvider.KEY_TwoD_APPS, new HashSet<>());
         hiddenList = sharedPreferences.getStringSet(SettingsProvider.KEY_HIDDEN_APPS, new HashSet<>());
 
         isEditMode = false;
@@ -143,6 +145,7 @@ public class AppsAdapter extends BaseAdapter
         TextView textView;
         ImageView progressBar;
         View favoriteBtn;
+        View TwoDBtn;
         View hiddenBtn;
         View deleteBtn;
         boolean hasBanner;
@@ -171,7 +174,9 @@ public class AppsAdapter extends BaseAdapter
                 continue;
             if (group == 1 && !favoriteList.contains(app.packageName))
                 continue;
-            if (group == 2 && !hiddenList.contains(app.packageName))
+            if (group == 2 && !TwoDList.contains(app.packageName))
+                continue;
+            if (group == 3 && !hiddenList.contains(app.packageName))
                 continue;
             if(hiddenApps.contains(app.packageName))
                 continue;
@@ -228,6 +233,7 @@ public class AppsAdapter extends BaseAdapter
             holder.textView = convertView.findViewById(R.id.textLabel);
             holder.progressBar = convertView.findViewById(R.id.progress_bar);
             holder.favoriteBtn = convertView.findViewById(R.id.favorite_btn);
+            holder.TwoDBtn = convertView.findViewById(R.id.TwoD_btn);
             holder.hiddenBtn = convertView.findViewById(R.id.hidden_btn);
             holder.deleteBtn = convertView.findViewById(R.id.delete_btn);
             convertView.setTag(holder);
@@ -262,6 +268,7 @@ public class AppsAdapter extends BaseAdapter
         }
 
         holder.favoriteBtn.setForeground(ResourcesCompat.getDrawable(mainActivityContext.getResources(), favoriteList.contains(currentApp.packageName) ? R.drawable.ic_favorite_active : R.drawable.ic_favorite, mainActivityContext.getTheme()));
+        holder.TwoDBtn.setForeground(ResourcesCompat.getDrawable(mainActivityContext.getResources(), TwoDList.contains(currentApp.packageName) ? R.drawable.ic_twod_active : R.drawable.ic_twod, mainActivityContext.getTheme()));
         holder.hiddenBtn.setForeground(ResourcesCompat.getDrawable(mainActivityContext.getResources(), hiddenList.contains(currentApp.packageName) ? R.drawable.ic_hidden_active : R.drawable.ic_hidden, mainActivityContext.getTheme()));
 
         holder.favoriteBtn.setOnClickListener(view -> {
@@ -275,7 +282,9 @@ public class AppsAdapter extends BaseAdapter
                 hiddenList.remove(app.packageName);
             }
             sharedPreferences.edit().putStringSet(SettingsProvider.KEY_FAVORITE_APPS, favoriteList).apply();
+            sharedPreferences.edit().putStringSet(SettingsProvider.KEY_TwoD_APPS, TwoDList).apply();
             sharedPreferences.edit().putStringSet(SettingsProvider.KEY_HIDDEN_APPS, hiddenList).apply();
+
 
             if(sharedPreferences.getInt(SettingsProvider.KEY_GROUP_SPINNER, 0) == 0) {
                 holder.favoriteBtn.setForeground(ResourcesCompat.getDrawable(mainActivityContext.getResources(), isFavorite ? R.drawable.ic_favorite : R.drawable.ic_favorite_active, mainActivityContext.getTheme()));
@@ -294,14 +303,35 @@ public class AppsAdapter extends BaseAdapter
             } else {
                 hiddenList.add(app.packageName);
                 favoriteList.remove(app.packageName);
+                TwoDList.remove(app.packageName);
             }
             sharedPreferences.edit().putStringSet(SettingsProvider.KEY_FAVORITE_APPS, favoriteList).apply();
+            sharedPreferences.edit().putStringSet(SettingsProvider.KEY_TwoD_APPS, TwoDList).apply();
             sharedPreferences.edit().putStringSet(SettingsProvider.KEY_HIDDEN_APPS, hiddenList).apply();
-
             // Reload view if state of current group changes
             updateAppList();
         });
+        holder.TwoDBtn.setOnClickListener(view -> {
+            ApplicationInfo app = appList.get(position);
+            boolean isTwoD = TwoDList.contains(app.packageName);
 
+            if(isTwoD) {
+                TwoDList.remove(app.packageName);
+            } else {
+                TwoDList.add(app.packageName);
+                hiddenList.remove(app.packageName);
+            }
+            sharedPreferences.edit().putStringSet(SettingsProvider.KEY_FAVORITE_APPS, favoriteList).apply();
+            sharedPreferences.edit().putStringSet(SettingsProvider.KEY_HIDDEN_APPS, hiddenList).apply();
+            sharedPreferences.edit().putStringSet(SettingsProvider.KEY_TwoD_APPS, TwoDList).apply();
+
+            if(sharedPreferences.getInt(SettingsProvider.KEY_GROUP_SPINNER, 0) == 0) {
+                holder.TwoDBtn.setForeground(ResourcesCompat.getDrawable(mainActivityContext.getResources(), isTwoD ? R.drawable.ic_twod : R.drawable.ic_twod_active, mainActivityContext.getTheme()));
+            } else {
+                // Reload view if state of current group changes
+                updateAppList();
+            }
+        });
 //        holder.deleteBtn.setOnClickListener(view -> {
 //            ApplicationInfo app = appList.get(position);
 //
@@ -335,10 +365,12 @@ public class AppsAdapter extends BaseAdapter
 
         holder.layout.setOnGenericMotionListener(listener);
         holder.favoriteBtn.setOnGenericMotionListener(listener);
+        holder.TwoDBtn.setOnGenericMotionListener(listener);
         holder.hiddenBtn.setOnGenericMotionListener(listener);
         holder.deleteBtn.setOnGenericMotionListener(listener);
 
         holder.favoriteBtn.setVisibility(isEditMode ? View.VISIBLE : View.GONE);
+        holder.TwoDBtn.setVisibility(isEditMode ? View.VISIBLE : View.GONE);
         holder.hiddenBtn.setVisibility(isEditMode ? View.VISIBLE : View.GONE);
 //        holder.deleteBtn.setVisibility(isEditMode ? View.VISIBLE : View.GONE);
 
@@ -437,7 +469,9 @@ public class AppsAdapter extends BaseAdapter
     }
 
     public static File pkg2path(Context context, String pkg) {
-        return new File(context.getCacheDir(), pkg + ".webp");
+        String cachePath = null;
+        final String externalStorageState = Environment.getExternalStorageState();
+        return new File(context.getExternalCacheDir(), pkg + ".png");
     }
 
     private final String ICONS_URL = "https://api.picozen.app/assets/";
@@ -610,7 +644,7 @@ public class AppsAdapter extends BaseAdapter
                 }
                 try {
                     fos = new FileOutputStream(outputFile);
-                    bitmap.compress(Bitmap.CompressFormat.WEBP, 75, fos);
+                    bitmap.compress(Bitmap.CompressFormat.PNG, 100, fos);
                     fos.close();
                 } catch (Exception e) {
                     e.printStackTrace();
