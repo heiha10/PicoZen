@@ -7,6 +7,7 @@ An alternate **AND UNOFFICIAL** library and utility app for PICO XR (and Quest).
 
 联网库没有的图标可以自制png格式图片的图片生成图标默认尺寸（512x288）
 
+
 Added 2D application classification
 
 Modify icon cache format and path to  Android/data/<packagename>/cache/banners.<Packagename>.png
