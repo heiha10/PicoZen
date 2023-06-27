@@ -89,6 +89,7 @@
     <string-array name="group_options">
         <item>☰\t 全部</item>
         <item>★\t 收藏</item>
+        <item>②\t 2D应用</item>
         <item>—\t 隐藏</item>
     </string-array>
 
