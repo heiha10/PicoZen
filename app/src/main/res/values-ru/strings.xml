@@ -71,6 +71,7 @@
     <string-array name="group_options">
         <item>☰\t Все</item>
         <item>★\t Избранное</item>
+        <item>②\t 2D Применение</item>
         <item>—\t Скрытое</item>
     </string-array>
 
