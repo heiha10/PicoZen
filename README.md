@@ -5,9 +5,9 @@ An alternate **AND UNOFFICIAL** library and utility app for PICO XR (and Quest).
 
 修改图标缓存格式和路径为:
 
-Android/data/com.barnabwhy.picozen/cache/banners.{packagename}.png
+/sdcard/PicoZen/Pictures/banners.{packagename}.png
 
-例如：Android/data/com.barnabwhy.picozen/cache/banners.com.Armature.VR4.png
+例如：/sdcard/PicoZen/Pictures/banners.com.Armature.VR4.png
 
 联网库没有的图标可以自制png格式图片的图片生成图标默认尺寸（512x288）
 
