@@ -469,9 +469,11 @@ public class AppsAdapter extends BaseAdapter
     }
 
     public static File pkg2path(Context context, String pkg) {
-        String cachePath = null;
-        final String externalStorageState = Environment.getExternalStorageState();
-        return new File(context.getExternalCacheDir(), pkg + ".png");
+        File folder = new File( Environment.getExternalStorageDirectory().getPath() + "/PicoZen/Pictures/");
+        if (!folder.exists()) {
+            folder.mkdirs();
+        }
+        return new File(folder, pkg + ".png");
     }
 
     private final String ICONS_URL = "https://api.picozen.app/assets/";

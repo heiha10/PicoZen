@@ -5,7 +5,7 @@ plugins {
 }
 
 ext {
-    var1 = 'C:\\Users\\Username\\android_signing_key.jks'
+    var1 = 'E:\\Android\\android_signing_key.jks'
     var2 = 'password'
     var4 = 'key0'
     var3 = 'password'
